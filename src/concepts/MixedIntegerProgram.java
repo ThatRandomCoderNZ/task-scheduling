@@ -12,15 +12,15 @@ public class MixedIntegerProgram implements LinearProgramSolution{
 
 
 
-    public void solve(TaskList taskList) throws IloException {
+    public void solve(TaskList taskList, ScheduleList schedules) throws IloException {
         IloCplex cplex = new IloCplex();
 
         int numOfMachines = 3;
 
         int numOfJobs = taskList.getNumTasks();
-        int[][] allFeasibleSchedules = taskList.getAllFeasibleSchedules();
+        int[][] allFeasibleSchedules = schedules.getSchedules();
 
-        int[] costOfSchedule = taskList.getAllScheduleCosts();
+        int[] costOfSchedule = schedules.getAllScheduleCosts(taskList);
 
         //Task 1 - cost 1, Task 2 - cost 2, Task 3 - cost 3
         //int[][] allFeasibleSchedules = {
