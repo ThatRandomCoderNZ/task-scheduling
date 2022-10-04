@@ -6,7 +6,7 @@ import ilog.cplex.IloCplex;
 
 public class SimpleLinearProgram implements LinearProgramSolution{
 
-    public void solve() throws IloException {
+    public void solve(TaskList taskList) throws IloException {
         IloCplex cplex = new IloCplex();
 
         double[] lb = {0.0, 0.0, 0.0};
