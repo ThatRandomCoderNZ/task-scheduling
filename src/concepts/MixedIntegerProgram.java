@@ -12,7 +12,7 @@ public class MixedIntegerProgram implements LinearProgramSolution{
 
 
 
-    public void solve(TaskList taskList, ScheduleList schedules) throws IloException {
+    public List<Integer> solve(TaskList taskList, ScheduleList schedules) throws IloException {
         IloCplex cplex = new IloCplex();
 
         int numOfMachines = 3;
@@ -102,24 +102,25 @@ public class MixedIntegerProgram implements LinearProgramSolution{
         }
         cplex.addLe(totalMachines, numOfMachines);
 
-        cplex.exportModel("test.lp");
+        //cplex.exportModel("test.lp");
 
+        List<Integer> solutions = new ArrayList<>();
+        cplex.setOut(null);
         if(cplex.solve()){
-            System.out.println("Solution Status: " + cplex.getStatus());
-            System.out.println();
             System.out.println("Minimum Completion Time = " + cplex.getObjValue());
             System.out.println();
-            System.out.println("Optimal Values = ");
-            System.out.print("            ");
-            for(int i = 0; i < allFeasibleSchedules.length; i++){
-                String tag = i < 10 ? "s":"";
-                System.out.print(tag + i + "  ");
-            }
+//            System.out.println("Optimal Values = ");
+//            System.out.print("            ");
+//            for(int i = 0; i < allFeasibleSchedules.length; i++){
+//                String tag = i < 10 ? "s":"";
+//                System.out.print(tag + i + "  ");
+//            }
             System.out.println("");
             for(int i = 0; i < numOfMachines; i++){
                 double[] values = cplex.getValues(scheduleIsUsed[i]);
                 for (int j = 0; j < scheduleIsUsed[i].length; j++) {
                     if(cplex.getValue(scheduleIsUsed[i][j]) == 1.0){
+                        solutions.add(j);
                         System.out.println("Machine: " + i  + " Schedule: " + j + " Cost: " + costOfSchedule[j]);
                         System.out.print("Job Covering: ");
                         for(int a = 0; a < jobIsCovered.length; a++){
@@ -130,13 +131,8 @@ public class MixedIntegerProgram implements LinearProgramSolution{
                 }
                 System.out.println();
             }
-
-//            System.out.println("Schedules");
-//            for(int i = 0; i < allFeasibleSchedules.length; i++){
-//                System.out.println("s" + i + ": " + Arrays.toString(allFeasibleSchedules[i]) + " cost: " + costOfSchedule[i]);
-//            }
-
-
         }
+
+        return solutions;
     }
 }

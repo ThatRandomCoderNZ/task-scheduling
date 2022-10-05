@@ -4,9 +4,12 @@ import ilog.concert.IloException;
 import ilog.concert.IloNumVar;
 import ilog.cplex.IloCplex;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SimpleLinearProgram implements LinearProgramSolution{
 
-    public void solve(TaskList taskList, ScheduleList schedules) throws IloException {
+    public List<Integer> solve(TaskList taskList, ScheduleList schedules) throws IloException {
         IloCplex cplex = new IloCplex();
 
         double[] lb = {0.0, 0.0, 0.0};
@@ -35,6 +38,8 @@ public class SimpleLinearProgram implements LinearProgramSolution{
             }
         }
         cplex.end();
+
+        return new ArrayList<Integer>();
     }
 
 }

@@ -2,6 +2,8 @@ package concepts;
 
 import ilog.concert.IloException;
 
+import java.util.List;
+
 public interface LinearProgramSolution {
-    void solve(TaskList taskList, ScheduleList schedules) throws IloException;
+    List<Integer> solve(TaskList taskList, ScheduleList schedules) throws IloException;
 }
