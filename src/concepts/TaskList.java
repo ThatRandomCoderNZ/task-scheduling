@@ -37,6 +37,10 @@ public class TaskList {
         return tasks.get(index).procCost;
     }
 
+    public int getComDelay(int index){
+        return tasks.get(index).comCost;
+    }
+
     public int getNumTasks(){
         return this.tasks.size();
     }

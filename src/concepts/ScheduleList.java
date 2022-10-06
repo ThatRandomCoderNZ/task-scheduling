@@ -1,15 +1,13 @@
 package concepts;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ScheduleList {
     private int[][] schedules;
     private int[] scheduleCosts;
 
+    private int[] scheduleGap;
     public ScheduleList(){}
 
     public ScheduleList(int[][] schedules){
@@ -19,6 +17,10 @@ public class ScheduleList {
     //Has a nasty side effect with invocation order dependency
     public int[][] getSchedules() {
         return schedules;
+    }
+
+    public int getScheduleGap(int index){
+        return this.scheduleGap[index];
     }
 
     public int getMostCostly(List<Integer> scheduleIndices){
@@ -87,14 +89,33 @@ public class ScheduleList {
 
     public int[] getAllScheduleCosts(TaskList tasks){
         int[] scheduleCosts = new int[schedules.length];
+        int[] scheduleGaps = new int[schedules.length];
         for(int i = 0; i < schedules.length; i++){
-            int cost = 0;
+
+            List<AbstractMap.SimpleImmutableEntry<Integer, Integer>> communicationDelays = new ArrayList<>();
             for(int j = 0; j < schedules[i].length; j++){
-                cost += tasks.getTaskCost(schedules[i][j]);
+                AbstractMap.SimpleImmutableEntry<Integer, Integer> taskComDelay = new AbstractMap.SimpleImmutableEntry<>(j,tasks.getComDelay(j));
+                communicationDelays.add(taskComDelay);
+            }
+            communicationDelays.sort(new Comparator<AbstractMap.SimpleImmutableEntry<Integer, Integer>>() {
+                @Override
+                public int compare(AbstractMap.SimpleImmutableEntry<Integer, Integer> o1, AbstractMap.SimpleImmutableEntry<Integer, Integer> o2) {
+                    return o1.getValue().compareTo(o2.getValue());
+                }
+            });
+
+            int cost = 0;
+            //int totalComDelay = 0;
+            for(int j = 0; j < communicationDelays.size(); j++){
+                int comDelay = Math.max(communicationDelays.get(j).getValue() - cost, 0);
+                //totalComDelay += comDelay;
+                cost += tasks.getTaskCost(schedules[i][j]) + comDelay;
             }
             scheduleCosts[i] = cost;
+            //scheduleGaps[i] = totalComDelay;
         }
         this.scheduleCosts = scheduleCosts;
+        //this.scheduleGap = scheduleGaps;
         return scheduleCosts;
     }
 
