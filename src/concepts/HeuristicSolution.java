@@ -15,8 +15,6 @@ public class HeuristicSolution implements TaskScheduler{
         for(int i = 0; i < 2; i++){
             schedules.mutateRandomly(taskList.getNumTasks());
         }
-
-        System.out.println(Arrays.deepToString(schedules.getSchedules()));
         double currentBest = Double.MAX_VALUE;
 
         int randomShakeLimit = 5;
@@ -25,7 +23,7 @@ public class HeuristicSolution implements TaskScheduler{
         int solutionCounter = 0;
         while(!stuck) {
             SolutionDto solution = solver.solve(taskList, schedules);
-            System.out.println("Solution " + solutionCounter + " cost: " + solution.minCost);
+            //System.out.println("Solution " + solutionCounter + " cost: " + solution.minCost);
             int mostCostly = schedules.getMostCostly(solution.solution);
             int leastCostly = schedules.getLeastCostly(solution.solution);
             int secondLeastCostly = schedules.getSecondLeastCostly(solution.solution);

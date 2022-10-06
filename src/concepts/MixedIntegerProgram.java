@@ -110,7 +110,6 @@ public class MixedIntegerProgram implements LinearProgramSolution{
         cplex.setOut(null);
         if(cplex.solve()){
             solution.minCost = cplex.getObjValue();
-            System.out.println("");
 //            for(int i = 0; i < numOfMachines; i++){
 //                double[] values = cplex.getValues(scheduleIsUsed[i]);
 //                for (int j = 0; j < scheduleIsUsed[i].length; j++) {
