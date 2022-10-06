@@ -9,7 +9,7 @@ import java.util.List;
 
 public class SimpleLinearProgram implements LinearProgramSolution{
 
-    public List<Integer> solve(TaskList taskList, ScheduleList schedules) throws IloException {
+    public SolutionDto solve(TaskList taskList, ScheduleList schedules) throws IloException {
         IloCplex cplex = new IloCplex();
 
         double[] lb = {0.0, 0.0, 0.0};
@@ -39,7 +39,7 @@ public class SimpleLinearProgram implements LinearProgramSolution{
         }
         cplex.end();
 
-        return new ArrayList<Integer>();
+        return new SolutionDto();
     }
 
 }

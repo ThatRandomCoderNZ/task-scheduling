@@ -26,7 +26,6 @@ public class ScheduleList {
     public int getMostCostly(List<Integer> scheduleIndices){
         int maxVal = 0;
         int maxIndex = -1;
-        System.out.println(scheduleIndices);
         return scheduleIndices.stream()
                 .max(new Comparator<Integer>() {
                     @Override
@@ -37,15 +36,46 @@ public class ScheduleList {
 
     }
 
+    public int getLeastCostly(List<Integer> scheduleIndices){
+        int maxVal = 0;
+        int maxIndex = -1;
+        return scheduleIndices.stream()
+                .min(new Comparator<Integer>() {
+                    @Override
+                    public int compare(Integer o1, Integer o2) {
+                        return Integer.compare(scheduleCosts[o1], scheduleCosts[o2]);
+                    }
+                }).orElse(0);
+
+    }
+
+    public int getSecondLeastCostly(List<Integer> scheduleIndices){
+        int maxVal = 0;
+        int maxIndex = -1;
+        List<Integer> sortedIndices = scheduleIndices.stream().sorted(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return Integer.compare( scheduleCosts[o1], scheduleCosts[o2]);
+            }
+        }).collect(Collectors.toList());
+
+        if(sortedIndices.size() == 0){
+            return 0;
+        }
+
+        return sortedIndices.size() > 1 ? sortedIndices.get(1): sortedIndices.get(0);
+
+    }
+
     public void mutateRandomly(int taskNum){
         int totalOptions = (int)Math.pow(2, taskNum);
         int mutatedOptions = (int)(totalOptions * .02);
 
         List<int[]> mutations = new ArrayList<>();
-        for(int i = 0; i < 40; i++){
+        for(int i = 0; i < 50; i++){
             List<Integer> mutation = new ArrayList<>();
             for(int j = 0; j < taskNum; j++){
-                if(Math.random() > .3){
+                if(Math.random() > .7){
                     mutation.add(j);
                 }
             }
@@ -59,32 +89,59 @@ public class ScheduleList {
         schedules = newSchedules.toArray(schedules);
     }
 
-    public String mutateOnSchedule(int scheduleIndex, TaskList taskList){
-        int[] includedTasks = schedules[scheduleIndex];
+    private int pickRandomFromRange(int rangeLimit){
+        boolean picked = false;
+        int indexCounter = 0;
+        while(!picked){
+            indexCounter++;
+            if(indexCounter >= rangeLimit){
+                indexCounter = 0;
+            }
+            picked = (Math.random() * 10 > 2);
+        }
+        return indexCounter;
+    }
+
+    public void mutateOnSchedule(int costlyScheduleIndex, int cheapScheduleIndex, TaskList taskList){
+        int[] includedTasks = schedules[costlyScheduleIndex];
+        int[] bestTasks = schedules[cheapScheduleIndex];
         int[] excludedTasks = taskList.getExcludedList(Arrays.stream(includedTasks).boxed().collect(Collectors.toList()));
 
         List<int[]> mutations = new ArrayList<>();
-        for(int i = 0; i < includedTasks.length; i++){
-            for(int j = 0; j < excludedTasks.length; j++){
-                int[] schedule = includedTasks.clone();
-                schedule[i] = excludedTasks[j];
-                mutations.add(Arrays.stream(schedule).sorted().toArray());
+        for (int includedTask : includedTasks) {
+            Set<Integer> schedule = new HashSet<>();
+            schedule.add(includedTask);
+            if (excludedTasks.length > 0) {
+                schedule.add(excludedTasks[pickRandomFromRange(excludedTasks.length)]);
             }
+            List<Integer> scheduleToAdd = new ArrayList<>(schedule);
+            mutations.add(scheduleToAdd.stream().sorted().mapToInt((Integer val) -> val).toArray());
         }
 
-//        System.out.println("Task Lists");
-//        System.out.println(Arrays.toString(includedTasks));
-//        System.out.println(Arrays.toString(excludedTasks));
+        for(int i = 0; i < includedTasks.length; i++){
+            for(int k = i; k >= 0; k--){
+                List<Integer> schedule = new ArrayList<>();
+                for(int b = k; b <= i; b ++) {
+                    schedule.add(includedTasks[b]);
+                }
+                if(bestTasks[0] != includedTasks[0]) {
+                    for (int bestTask : bestTasks) {
+                        if (Math.random() * 10 > 7) {
+                            schedule.add(bestTask);
+                        }
+                    }
+                }
+                mutations.add(schedule.stream().sorted().mapToInt((Integer val) -> val).toArray());
+            }
+
+        }
+
         List<int[]> newSchedules = new ArrayList<>(Arrays.asList(this.schedules));
-        //System.out.println("Mutations");
-        //mutations.forEach(schedule -> System.out.println(Arrays.toString(schedule)));
-        //System.out.println(mutations.getClass() + " " + newSchedules.getClass());
         newSchedules.addAll(mutations);
         schedules = newSchedules.toArray(schedules);
 
         //System.out.println(Arrays.deepToString(schedules));
         //Mutation Key
-        return Arrays.toString(includedTasks);
     }
 
     public int[] getAllScheduleCosts(TaskList tasks){
@@ -105,17 +162,17 @@ public class ScheduleList {
             });
 
             int cost = 0;
-            //int totalComDelay = 0;
+            int totalComDelay = 0;
             for(int j = 0; j < communicationDelays.size(); j++){
                 int comDelay = Math.max(communicationDelays.get(j).getValue() - cost, 0);
-                //totalComDelay += comDelay;
+                totalComDelay += comDelay;
                 cost += tasks.getTaskCost(schedules[i][j]) + comDelay;
             }
             scheduleCosts[i] = cost;
-            //scheduleGaps[i] = totalComDelay;
+            scheduleGaps[i] = totalComDelay;
         }
         this.scheduleCosts = scheduleCosts;
-        //this.scheduleGap = scheduleGaps;
+        this.scheduleGap = scheduleGaps;
         return scheduleCosts;
     }
 
@@ -134,5 +191,9 @@ public class ScheduleList {
         }
         //System.out.println(Arrays.deepToString(allSchedules));
         schedules = allSchedules;
+    }
+
+    public void printAllGaps(){
+        Arrays.stream(this.scheduleGap).forEach(System.out::println);
     }
 }

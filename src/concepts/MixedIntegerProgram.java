@@ -12,7 +12,7 @@ public class MixedIntegerProgram implements LinearProgramSolution{
 
 
 
-    public List<Integer> solve(TaskList taskList, ScheduleList schedules) throws IloException {
+    public SolutionDto solve(TaskList taskList, ScheduleList schedules) throws IloException {
         IloCplex cplex = new IloCplex();
 
         int numOfMachines = 3;
@@ -105,34 +105,31 @@ public class MixedIntegerProgram implements LinearProgramSolution{
         //cplex.exportModel("test.lp");
 
         List<Integer> solutions = new ArrayList<>();
+        SolutionDto solution = new SolutionDto();
+        solution.minCost = Double.MAX_VALUE;
         cplex.setOut(null);
         if(cplex.solve()){
-            System.out.println("Minimum Completion Time = " + cplex.getObjValue());
-            System.out.println();
-//            System.out.println("Optimal Values = ");
-//            System.out.print("            ");
-//            for(int i = 0; i < allFeasibleSchedules.length; i++){
-//                String tag = i < 10 ? "s":"";
-//                System.out.print(tag + i + "  ");
-//            }
+            solution.minCost = cplex.getObjValue();
             System.out.println("");
-            for(int i = 0; i < numOfMachines; i++){
-                double[] values = cplex.getValues(scheduleIsUsed[i]);
-                for (int j = 0; j < scheduleIsUsed[i].length; j++) {
-                    if(cplex.getValue(scheduleIsUsed[i][j]) == 1.0){
-                        solutions.add(j);
-                        System.out.println("Machine: " + i  + " Schedule: " + j + " Cost: " + costOfSchedule[j]);
-                        System.out.print("Job Covering: ");
-                        for(int a = 0; a < jobIsCovered.length; a++){
-                            System.out.print("Job " + a + ": " + jobIsCovered[a][j] + " ");
-                        }
-                        System.out.println();
-                    }
-                }
-                System.out.println();
-            }
+//            for(int i = 0; i < numOfMachines; i++){
+//                double[] values = cplex.getValues(scheduleIsUsed[i]);
+//                for (int j = 0; j < scheduleIsUsed[i].length; j++) {
+//                    if(cplex.getValue(scheduleIsUsed[i][j]) == 1.0){
+//                        solutions.add(j);
+//                        System.out.println("Machine: " + i  + " Schedule: " + j + " Cost: " + costOfSchedule[j]);
+//                        System.out.print("Job Covering: ");
+//                        for(int a = 0; a < jobIsCovered.length; a++){
+//                            System.out.print("Job " + a + ": " + jobIsCovered[a][j] + " ");
+//                        }
+//                        System.out.println();
+//                    }
+//                }
+//                System.out.println();
+//            }
+            cplex.end();
         }
 
-        return solutions;
+        solution.solution = solutions;
+        return solution;
     }
 }
