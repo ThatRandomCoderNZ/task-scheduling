@@ -151,7 +151,7 @@ public class ScheduleList {
 
             List<AbstractMap.SimpleImmutableEntry<Integer, Integer>> communicationDelays = new ArrayList<>();
             for(int j = 0; j < schedules[i].length; j++){
-                AbstractMap.SimpleImmutableEntry<Integer, Integer> taskComDelay = new AbstractMap.SimpleImmutableEntry<>(j,tasks.getComDelay(j));
+                AbstractMap.SimpleImmutableEntry<Integer, Integer> taskComDelay = new AbstractMap.SimpleImmutableEntry<>(j,tasks.getComDelay(schedules[i][j]));
                 communicationDelays.add(taskComDelay);
             }
             communicationDelays.sort(new Comparator<AbstractMap.SimpleImmutableEntry<Integer, Integer>>() {
@@ -163,11 +163,14 @@ public class ScheduleList {
 
             int cost = 0;
             int totalComDelay = 0;
+            //System.out.println("schedule: " + Arrays.toString(schedules[i]) + " delays: " + communicationDelays );
             for(int j = 0; j < communicationDelays.size(); j++){
                 int comDelay = Math.max(communicationDelays.get(j).getValue() - cost, 0);
                 totalComDelay += comDelay;
-                cost += tasks.getTaskCost(schedules[i][j]) + comDelay;
+                cost += tasks.getTaskCost(schedules[i][communicationDelays.get(j).getKey()]) + comDelay;
+                //System.out.println("task: " + j + " com delay: " + comDelay + " cost: " + cost);
             }
+            //System.out.println("schedule: " + Arrays.toString(schedules[i]) + " cost: "  +cost);
             scheduleCosts[i] = cost;
             scheduleGaps[i] = totalComDelay;
         }

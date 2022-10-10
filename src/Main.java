@@ -32,6 +32,7 @@ public class Main {
             long executionTime = finalTimestamp - initialTimestamp;
             long executionTimeMilliseconds = executionTime / 1000000;
 
+            System.out.println("Solved Problem: " + problem + " in " + executionTimeMilliseconds + " ms and found the best solution: " + best );
             outputData.add(new String[]{ problem, executionTimeMilliseconds + "", best + ""});
         }
 
@@ -41,7 +42,7 @@ public class Main {
     }
 
     public static void createCsvFile(List<String[]> dataLines) throws IOException {
-        File csvOutputFile = new File("output.csv");
+        File csvOutputFile = new File("output-longer-first-attempt.csv");
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
             dataLines.stream()
                     .map(Main::convertToCSV)

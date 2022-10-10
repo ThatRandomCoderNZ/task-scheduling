@@ -110,21 +110,21 @@ public class MixedIntegerProgram implements LinearProgramSolution{
         cplex.setOut(null);
         if(cplex.solve()){
             solution.minCost = cplex.getObjValue();
-//            for(int i = 0; i < numOfMachines; i++){
-//                double[] values = cplex.getValues(scheduleIsUsed[i]);
-//                for (int j = 0; j < scheduleIsUsed[i].length; j++) {
-//                    if(cplex.getValue(scheduleIsUsed[i][j]) == 1.0){
-//                        solutions.add(j);
-//                        System.out.println("Machine: " + i  + " Schedule: " + j + " Cost: " + costOfSchedule[j]);
-//                        System.out.print("Job Covering: ");
-//                        for(int a = 0; a < jobIsCovered.length; a++){
-//                            System.out.print("Job " + a + ": " + jobIsCovered[a][j] + " ");
-//                        }
-//                        System.out.println();
-//                    }
-//                }
-//                System.out.println();
-//            }
+            for(int i = 0; i < numOfMachines; i++){
+                double[] values = cplex.getValues(scheduleIsUsed[i]);
+                for (int j = 0; j < scheduleIsUsed[i].length; j++) {
+                    if(cplex.getValue(scheduleIsUsed[i][j]) == 1.0){
+                        solutions.add(j);
+                        System.out.println("Machine: " + i  + " Schedule: " + j + " Cost: " + costOfSchedule[j]);
+                        System.out.print("Job Covering: ");
+                        for(int a = 0; a < jobIsCovered.length; a++){
+                            System.out.print("Job " + a + ": " + jobIsCovered[a][j] + " ");
+                        }
+                        System.out.println();
+                    }
+                }
+                System.out.println();
+            }
             cplex.end();
         }
 
