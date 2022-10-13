@@ -19,6 +19,7 @@ public class MixedIntegerProgram implements LinearProgramSolution{
 
         int numOfJobs = taskList.getNumTasks();
         int[][] allFeasibleSchedules = schedules.getSchedules();
+        //System.out.println(allFeasibleSchedules.length);
 
         int[] costOfSchedule = schedules.getAllScheduleCosts(taskList);
 

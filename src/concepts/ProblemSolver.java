@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProblemSolver {
-    public double solveProblem(String problemName) throws FileNotFoundException, IloException {
+    public OutputDto solveProblem(String problemName) throws FileNotFoundException, IloException {
         TaskScheduler taskScheduler = new HeuristicSolution();
         ProblemDataCreator problemDataCreator = new ProblemDataCreator();
 
@@ -20,7 +20,8 @@ public class ProblemSolver {
         TaskList taskList = new TaskList(taskDataList);
 
 
-        return taskScheduler.solve(taskList, initialSchedules) + data.firstCost;
+        OutputDto solutionOutput = taskScheduler.solve(taskList, initialSchedules);
+        return new OutputDto(solutionOutput, data.firstCost);
 
     }
 }
